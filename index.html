@@ -9,16 +9,38 @@
 
     <title></title>
     <link href="./css/styles.css" rel="stylesheet">
+    <link href="./css/extralife.css" rel="stylesheet">
+    <link href="./css/snackbar.css" rel="stylesheet">
 </head>
 
 <body>
+    <div id="snackbar">Page update available. Click here to refresh.</div>
     <main>
-        <div class="messages">
-            <div id="main"></div>
-        </div>
+            <div id="main" class="Section-Donation">
+                <div id="charity-leaderboard">
+                    <div class="charity-leaderboard__header">
+                        <div id="logo"></div>
+                        <h1><span id="display-name"></span></h1>
+                        <h2><div id="profile__progress-bar-goal"></div></h2>
+                        <div id="profile__progress-bar-raised"></div>
+                        <div id="profile__progress-bar-remaining"></div>
+                        <div id="profile__progress-bar">
+                            <div id="profile__progress-bar-progress"></div>
+                        </div>
+                    </div>
+                    <span class="top-donors-title">Recent Donors</span>
+                    <ol id="js-top-donors-list" class="charity-leaderboard__donor-list"></ol>
+    
+                    <div id="panel-container">
+                        <a id="donate-button" class="panel__button panel__button--donate" value="Donate" href="https://slurpathon.com/donate"></a>
+                    </div>
+                </div>
+            </div>
     </main>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-timeago/1.6.7/jquery.timeago.min.js" integrity="sha512-RlGrSmkje9EE/FXpJKWf0fvOlg4UULy/blvNsviBX9LFwMj/uewXVoanRbxTIRDXy/0A3fBQppTmJ/qOboJzmA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="./js/extralife-api.js"></script>
+    <script src="./js/updates.js"></script>
 </body>
 
 </html>
