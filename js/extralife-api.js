@@ -126,7 +126,6 @@ function UpdateLeaderboard(donationArr) {
 }
 
 async function AddRow(donation) {
-    console.log(`Adding donation from ${donation.displayName}`);
     var table = document.getElementById('js-top-donors-list');
     var row = '';
     var donor = '';
@@ -158,56 +157,6 @@ async function AddRow(donation) {
     }
 }
 
-function UpdateTimestamps() {
-    let timestamps = document.querySelectorAll("time");
-    timestamps.forEach((timestamp) => {
-        let time = timestamp.getAttribute("datetime");
-        let timeAgo = CalculateRelativeTime(time);
-        timestamp.innerHTML = timeAgo;
-    });
-}
-
-function CalculateRelativeTime(timestamp) {
-    const now = new Date();
-    const oldDate = new Date(timestamp);
-
-    // Difference is in milliseconds, convert to seconds.
-    const difference = (now - oldDate) / 1000;
-
-    let amt, unit;
-
-    if (difference < 60) {
-        // Less than a minute has passed:
-        amt = difference;
-        unit = 'second';
-    } else if (difference < 3600) {
-        // Less than an hour has passed:
-        amt = difference / 60;
-        unit = 'minute';
-    } else if (difference < 86400) {
-        // Less than a day has passed:
-        amt = difference / 3600;
-        unit = 'hour';
-    } else if (difference < 2620800) {
-        // Less than a month has passed:
-        amt = difference / 86400;
-        unit = 'day';
-    } else if (difference < 31449600) {
-        // Less than a year has passed:
-        amt = difference / 2620800;
-        unit = 'month';
-    } else {
-        // More than a year has passed:
-        amt = difference / 31449600;
-        unit = 'year';
-    }
-
-    let truncAmt = Math.trunc(amt);
-    let output = `${truncAmt} ${unit}${truncAmt == 1 ? '' : 's'} ago`;
-
-    return output;
-}
-
 function GetMaxDate(arr) {
     const maxDate = new Date(
         Math.max(
@@ -226,8 +175,8 @@ function GetMaxDate(arr) {
     UpdateDonationLink();
     UpdateDisplayName(team);
     UpdateLeaderboard(donos);
-    UpdateTimestamps();
-    setInterval(UpdateTimestamps, 1000);
+
+    //! TEST DATA
     await sleep(5000);
     donos = await test(donos);
     await sleep(5000);
