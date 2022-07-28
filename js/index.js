@@ -4,7 +4,7 @@
 /**
  * Update the donation button's text
  */
- function UpdateDonationLink() {
+function UpdateDonationLink() {
     let donateButton = document.getElementById('donate-button');
     donateButton.textContent = 'Donate';
     let donateURL = `${settings.basePath}/index.cfm?fuseaction=donorDrive.${settings.entityType}&${settings.entityType}ID=${settings.entityID}`;
@@ -47,7 +47,7 @@ function CalcProgressBar(progress, target) {
  * 
  * @param {object} donationArr The donations object returned from the DonorDrive API
  */
- function UpdateLeaderboard(donationArr) {
+function UpdateLeaderboard(donationArr) {
     let newDonations
     if (cacheMaxDate) {
         newDonations = donationArr.filter(dono => new Date(dono.createdDateUTC) > cacheMaxDate);
@@ -89,7 +89,7 @@ async function AddRow(donation) {
     table.insertBefore(row, table.firstChild);
 
     // Clean up rows if we have more than we need.
-    while(table.children.length > settings.rowLimit) {
+    while (table.children.length > settings.rowLimit) {
         table.removeChild(table.children[table.children.length - 1]);
     }
 }
@@ -118,9 +118,9 @@ function GetMaxDate(arr) {
     donos = await test(donos);
     await sleep(5000);
     donos = await test(donos);
-    
+
 })();
-    
+
 async function test(donoarr) {
     let newdono =
     {

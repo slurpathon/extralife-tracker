@@ -3,9 +3,9 @@
 
 import { CountUp } from "./countup.min.js";
 const options = {
-      decimalPlaces: 2,
-      prefix: '$',
-    }
+    decimalPlaces: 2,
+    prefix: '$',
+}
 let counter = new CountUp('counter', 0, options);
 
 // Global variables
@@ -28,13 +28,13 @@ async function test(num) {
 }
 
 // Our main function
-async function main () {
+async function main() {
     // Check for dark mode
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     const dark = (urlParams.get('dark') != null);
 
-    if(dark) {
+    if (dark) {
         document.getElementById('counter').classList.add('dark');
     }
 
