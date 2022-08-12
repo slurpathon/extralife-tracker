@@ -41,18 +41,10 @@ async function main() {
     counter.start();
 
     // Update counter
-    //CheckTotals();
+    CheckTotals();
 
     // Check every 30 seconds.
-    //setInterval(CheckTotals, 30000);
-
-    //! TEST DATA
-    await test(51);
-    await test(61);
-    await test(70.5);
-    await test(70.98);
-    await test(1000000);
-
+    setInterval(CheckTotals, 30000);
 }
 
 main();
