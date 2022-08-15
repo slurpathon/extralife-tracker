@@ -1,0 +1,28 @@
+.row {
+    display: flex;
+    align-items: stretch;
+  }
+  
+  .row .label {
+    flex: 0 0 120px;
+  }
+  
+  .bar-container {
+    display: flex;
+    align-items: stretch;
+    flex: 1;
+    display: flex;
+    align-items: stretch;
+    justify-content: flex-start;
+  }
+  
+.bar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid red;
+  }
+  
+  .val-a { background: salmon }
+  .val-b { background: wheat }
+  .val-c { background: honeydew }

@@ -8,10 +8,15 @@ const incentivesToShow = 3;
 (async () => {
     let json = await GetData();
     let values = json.values;
-    let parsed = ParseSheet(values);
-    let filtered = FilterCurrentIncentives(parsed);
-    //console.log(filtered);
-    GroupIncentives(values);
+
+    // remove headers
+    values.splice(0, 1);
+
+    let filtered = FilterCurrentIncentives(values);
+    let parsed = ParseSheet(filtered);
+
+    SetDiv(parsed);
+    console.log(parsed);
 })();
 
 // Grab data from Google Sheets API
@@ -27,25 +32,41 @@ async function GetData() {
 
 // Convert string values to proper types
 function ParseSheet(input) {
-    // Get headers, remove spaces, set lower case
-    let headers = input.splice(0, 1)[0].map(el => el.replace(/\s/g, '').toLowerCase());
 
-    let incentives = [];
+    let incentives = {};
 
-    for(let i=0; i<input.length; i++) {
+    for (let i = 0; i < input.length; i++) {
         let row = input[i];
 
         let obj = {
             game: row[0],
             type: row[1],
-            cutoff: Date.parse(row[2]) || null,
+            visible: row[2] || false,
             goal: row[3] == "" ? 0 : row[3],
             total: row[4] == "" ? 0 : row[4],
             choice: row[5],
             description: row[6]
         }
-        
-        incentives[i].combinedname = incentives[i].game + " - " + incentives[i].description;
+
+        obj.combinedname = obj.game + " - " + obj.description;
+
+        if (obj.type.toLowerCase() == "bid war") {
+            // Create object if not exists
+            if (!incentives.hasOwnProperty(obj.combinedname))
+                incentives[obj.combinedname] = {
+                    type: "war",
+                    choices: {}
+                };
+
+            incentives[obj.combinedname].choices[obj.choice] = obj.total;
+
+        } else if (obj.type.toLowerCase() == "goal") {
+            incentives[obj.combinedname] = {
+                type: "goal",
+                goal: obj.goal,
+                total: obj.total
+            };
+        }
     }
 
     return incentives;
@@ -53,58 +74,43 @@ function ParseSheet(input) {
 
 // Remove past incentives from the object
 function FilterCurrentIncentives(values) {
-    let now = Date.now();
     // values.sort((a, b) => a[2] - b[2]);
-    return values.filter(arr => arr.cutofftime > now);
+    return values.filter(arr => arr[2] === true);
 }
 
-function GroupIncentives(values) {
-    let wars = GroupBidWars(values);
-    let goals = GroupGoals(values);
-
-    let incentives = Object.assign(wars, goals);
+function SetDiv(values) {
+    let div = document.getElementById("incentive-bar");
+    if (div.firstChild) {
+        // It has at least one child
+    } else {
+        for (const property in values) {
+            //console.log(`${property}: ${values[property]}`);
+            let child = BuildDiv(property, values[property]);
+            div.appendChild(child);
+        }
+    }
 }
 
-// Pulls the bid wars
-function GroupBidWars(input) {
-    let rawbidwars = input.filter(arr => arr[1].toLowerCase() === "bid war");
-    let bidwars = {};
-    rawbidwars.forEach(row => {
-        let game = row[0];
-        let cutoff = row[2];
-        let total = row[4];
-        let choice = row[5];
-        let description = row[6];
+// https://thomaswilburn.github.io/viz-book/css-flex.html
+function BuildDiv(property, values) {
+    let child = document.createElement("div");
+    if (values.type == "war") {
+        child.className = "bar-container";
 
-        let name = game + " - " + description;
-        
-        bidwars[name] = bidwars[name] || {};
+        let sumValues = Object.values(values.choices).reduce((a, b) => a + b);
 
-        bidwars[name].bids[choice] = total;
-        bidwars[name].cutoff = cutoff;
-        bidwars[name].type = 'war';
-    });
-}
+        for (const option in values.choices) {
+            let choice = document.createElement("div");
+            choice.className = "bar";
+            choice.style = `flex-basis: ${(values.choices[option] / sumValues) * 100}%`;
+            choice.innerHTML = option + ": " + values.choices[option];
+            child.appendChild(choice);
+        }
 
-// Pulls the rote goals
-function GroupGoals(input) {
-    let rawgoals = input.filter(arr => arr[1].toLowerCase() === "goal");
-    let goals = {};
-
-    rawgoals.forEach(row => {
-        let game = row[0];
-        let cutoff = row[2];
-        let goal = row[3];
-        let total = row[4];
-        let description = row[6];
-
-        let name = game + " - " + description;
-        
-        goals[name] = goals[name] || {};
-
-        goals[name].goal = goal;
-        goals[name].total = total;
-        goals[name].cutoff = cutoff;
-        goals[name].type = 'goal';
-    });
+        console.log("");
+    } else if (values.type == "goal") {
+        child.innerHTML = property + ": " + values.total + " / " + values.goal;
+        console.log(property + ": " + values.total + " / " + values.goal);
+    }
+    return child;
 }
