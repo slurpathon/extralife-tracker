@@ -20,9 +20,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    border: 1px solid red;
+    min-height: 50px;
+    padding: 0 10px;
   }
-  
-  .val-a { background: salmon }
-  .val-b { background: wheat }
-  .val-c { background: honeydew }

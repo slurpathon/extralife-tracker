@@ -93,24 +93,59 @@ function SetDiv(values) {
 
 // https://thomaswilburn.github.io/viz-book/css-flex.html
 function BuildDiv(property, values) {
+    const colors = [
+        "#EAB8D5",
+        "#CC3F61",
+        "#52C6DC",
+        "#EB75A6",
+        "#BA7A39",
+        "#92E3F2",
+        "#46220F",
+        "#D59D88",
+        "#F3EAF9"
+    ]
     let child = document.createElement("div");
     if (values.type == "war") {
         child.className = "bar-container";
 
         let sumValues = Object.values(values.choices).reduce((a, b) => a + b);
 
+        let i = 0;
         for (const option in values.choices) {
             let choice = document.createElement("div");
             choice.className = "bar";
-            choice.style = `flex-basis: ${(values.choices[option] / sumValues) * 100}%`;
+            choice.style = `flex-basis: ${(values.choices[option] / sumValues) * 100}%; background-color: ${colors[i]}`;
             choice.innerHTML = option + ": " + values.choices[option];
             child.appendChild(choice);
+            i++;
         }
 
         console.log("");
     } else if (values.type == "goal") {
-        child.innerHTML = property + ": " + values.total + " / " + values.goal;
-        console.log(property + ": " + values.total + " / " + values.goal);
+        child.className = "bar-container";
+        
+        let choice = document.createElement("div");
+        let remainder = document.createElement("div");
+
+        choice.className = "bar";
+        let percentage = (values.total / values.goal) * 100
+        choice.style = `flex-basis: ${percentage}%; background-color: salmon; justify-content: right;`;
+        let text = property + ": " + values.total + " / " + values.goal;
+
+        if(percentage < 40) {
+            remainder.innerHTML = text;
+        } else {
+            choice.innerHTML = text;
+        }
+
+        // fill the rest of the bar with a transparent value
+        remainder.className = "bar";
+        remainder.style = `flex-basis: ${100 - percentage}%; justify-content: left;`;
+        
+        child.appendChild(choice);
+        child.appendChild(remainder);
+
+        console.log(percentage);
     }
     return child;
 }
