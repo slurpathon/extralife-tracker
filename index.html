@@ -16,32 +16,200 @@
 <body>
     <div id="snackbar">Page update available. Click here to refresh.</div>
     <main>
-            <div id="main" class="Section-Donation">
-                <div id="charity-leaderboard">
-                    <div class="charity-leaderboard__header">
-                        <div id="logo"></div>
-                        <h1><span id="display-name"></span></h1>
-                        <h2><div id="profile__progress-bar-goal"></div></h2>
-                        <div id="profile__progress-bar-raised"></div>
-                        <div id="profile__progress-bar-remaining"></div>
-                        <div id="profile__progress-bar">
-                            <div id="profile__progress-bar-progress"></div>
-                        </div>
-                    </div>
-                    <span class="top-donors-title">Recent Donors</span>
-                    <ol id="js-top-donors-list" class="charity-leaderboard__donor-list"></ol>
-    
-                    <div id="panel-container">
-                        <a id="donate-button" class="panel__button panel__button--donate" value="Donate" href="https://slurpathon.com/donate"></a>
+        <div id="main" class="Section-Donation">
+            <div id="charity-leaderboard">
+                <div class="charity-leaderboard__header">
+                    <div id="logo"></div>
+                    <h1><span id="display-name"></span></h1>
+                    <h2>
+                        <div id="profile__progress-bar-goal"></div>
+                    </h2>
+                    <div id="profile__progress-bar-raised"></div>
+                    <div id="profile__progress-bar-remaining"></div>
+                    <div id="profile__progress-bar">
+                        <div id="profile__progress-bar-progress"></div>
                     </div>
                 </div>
+                <span class="top-donors-title">Recent Donors</span>
+                <ol id="js-top-donors-list" class="charity-leaderboard__donor-list"></ol>
+
+                <div id="panel-container">
+                    <a id="donate-button" class="panel__button panel__button--donate" value="Donate"
+                        href="https://slurpathon.com/donate"></a>
+                </div>
             </div>
+        </div>
     </main>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-timeago/1.6.7/jquery.timeago.min.js" integrity="sha512-RlGrSmkje9EE/FXpJKWf0fvOlg4UULy/blvNsviBX9LFwMj/uewXVoanRbxTIRDXy/0A3fBQppTmJ/qOboJzmA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="./js/extralife-api.js"></script>
-    <script src="./js/index.js"></script>
     <script src="./js/updates.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"
+        integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-timeago/1.6.7/jquery.timeago.min.js"
+        integrity="sha512-RlGrSmkje9EE/FXpJKWf0fvOlg4UULy/blvNsviBX9LFwMj/uewXVoanRbxTIRDXy/0A3fBQppTmJ/qOboJzmA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="./js/donordrive.api.js"></script>
+    <script>
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        const id = urlParams.get('id');
+        const type = urlParams.get('type') ?? "participant";
+        const eventId = 547; // Extra Life
+        const donationLimit = 5;
+        const currencyType = 'USD';
+        let cacheMaxDate;
+        DonorDrive.API.basePath = "https://www.extra-life.org/api/";
+
+        window.onload = function () {
+            PreparePage();
+        };
+
+        function PreparePage() {
+            DonorDrive.API.get(type, id)
+                .execute()
+                .then((data) => {
+                    // Donation Link
+                    var donateURL = data.links.page + "#donate";
+                    let donateButton = document.getElementById('donate-button');
+                    donateButton.textContent = 'Donate';
+                    donateButton.setAttribute('href', donateURL);
+                    donateButton.setAttribute('target', "_blank");
+
+                    // Page Title
+                    document.getElementById('display-name').textContent = data.name;
+                    document.getElementById('profile__progress-bar-goal').innerHTML = 'Goal: ' + FormatCurrency(data.fundraisingGoal, 0, 0);
+
+                    // Progress Bar - Initial value
+                    UpdateValues(data.sumDonations, data.fundraisingGoal);
+                });
+        }
+
+        /**
+         * Updates the progress bar, raised, and remaining amounts.
+         * 
+         * @param {float} progress The amount raised.
+         * @param {float} target The donation goal.
+         */
+        function UpdateValues(progress, target) {
+            var progressBar = document.getElementById("profile__progress-bar-progress");
+            var newWidth = Math.ceil(progress / target * 100);
+            progressBar.style.width = (newWidth >= 100) ? '100%' : newWidth + '%';
+
+            document.getElementById('profile__progress-bar-raised').innerHTML = `Raised: ${FormatCurrency(progress, 0, 0)}`;
+            document.getElementById('profile__progress-bar-remaining').innerHTML = `${FormatCurrency(target - progress, 0, 0)} Remaining`;
+        }
+
+        // Progress bar + donations
+        DonorDrive.API.get(type, id)
+            .watch('participant-data-update')
+            .execute()
+            .then((data) => {
+                UpdateValues(data.sumDonations, data.fundraisingGoal);
+            });
+
+        $('body').on('participant-data-update', function (event, xhr) {
+            xhr.then((data) => {
+                UpdateValues(data.sumDonations, data.fundraisingGoal);
+            });
+        });
+
+        // Individual donations
+        DonorDrive.API.get(type + 'Donations', id)
+            .orderBy('createdDateUTC DESC')
+            .limit(donationLimit)
+            .watch('participant-donation-update')
+            .execute()
+            .then((data) => {
+                UpdateLeaderboard(data);
+            });
+        $('body').on('participant-recent-donation-update', function (event, xhr) {
+            xhr.then((data) => {
+                UpdateLeaderboard(data);
+            });
+        });
+
+        // Functions
+        /**
+         * Update the leaderboard with new values
+         * 
+         * @param {object} donationArr The donations object returned from the DonorDrive API.
+         */
+        function UpdateLeaderboard(donationArr) {
+            let newDonations;
+            if (cacheMaxDate) {
+                newDonations = donationArr.filter(dono => new Date(dono.createdDateUTC) > cacheMaxDate);
+            } else {
+                // First pull, need to reverse array.
+                newDonations = donationArr.reverse();
+            }
+            cacheMaxDate = GetMaxDate(donationArr);
+
+            if (newDonations.length > 0) {
+                newDonations.forEach(dono => AddRow(dono));
+            }
+        }
+
+        /**
+         * Format string as currency
+         * 
+         * @param {float} amount The string to format.
+         */
+        function FormatCurrency(amount) {
+            return amount.toLocaleString('en-CA', { style: 'currency', currency: currencyType });
+        }
+
+        /**
+         * Adds a row to the donation tracker
+         * 
+         * @param {object} donation A donation object.
+         */
+        async function AddRow(donation) {
+            var table = document.getElementById('js-top-donors-list');
+            var row = '';
+            var donor = '';
+            var amount = '';
+
+            row = document.createElement('li');
+
+            donor = document.createElement('span');
+            donor.classList.add('charity-leaderboard__donor-name');
+            donor.innerHTML = `${donation.displayName ? donation.displayName : 'Anonymous'} (${jQuery.timeago(donation.createdDateUTC)})`;
+
+            amount = document.createElement('span');
+            amount.classList.add('charity-leaderboard__donation-amount');
+            amount.innerHTML = donation.amount ? this.FormatCurrency(donation.amount, 2, 2) : 'N/A';
+
+            message = document.createElement('span');
+            message.classList.add('charity-leaderboard__message');
+            message.innerHTML = donation.message ? donation.message : '';
+
+            row.appendChild(donor);
+            row.appendChild(amount);
+            row.appendChild(message);
+            row.classList.add('new-box');
+            table.insertBefore(row, table.firstChild);
+
+            // Clean up rows if we have more than we need.
+            while (table.children.length > donationLimit) {
+                table.removeChild(table.children[table.children.length - 1]);
+            }
+        }
+
+        /**
+         * Gets the latest date from an array
+         * 
+         * @param {array} arr An array of donations.
+         */
+        function GetMaxDate(arr) {
+            const maxDate = new Date(
+                Math.max(
+                    ...arr.map(element => {
+                        return new Date(element.createdDateUTC);
+                    }),
+                ),
+            );
+            return maxDate;
+        }
+    </script>
 </body>
 
 </html>

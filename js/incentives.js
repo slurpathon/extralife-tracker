@@ -1,12 +1,13 @@
+const queryString = window.location.search;
+const urlParams = new URLSearchParams(queryString);
+
 // Get spreadsheet info
-const sheetId = "1TfXc0pIIUl0W5HcKnWHPRx4TlbHueX2DWg8yvtjAEeY";
-const apiKey = "";
+const sheetId = urlParams.get('sheetId');
+const apiKey = urlParams.get('apiKey');
 const range = "DB!A:G";
 const sheetUrl = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}?dateTimeRenderOption=FORMATTED_STRING&majorDimension=ROWS&valueRenderOption=UNFORMATTED_VALUE&key=${apiKey}`;
 
 // Get slide timer value
-const queryString = window.location.search;
-const urlParams = new URLSearchParams(queryString);
 const timer = urlParams.get('timer');
 const slideTimer = (timer != null) ? timer : 5000;
 

@@ -1,0 +1,65 @@
+@font-face {
+    font-family: 'Hylia Serif Beta';
+    src: url('../fonts/HyliaSerifBeta-Regular.eot');
+    src: local('Hylia Serif Beta Regular'), local('HyliaSerifBeta-Regular'),
+        url('../fonts/HyliaSerifBeta-Regular.eot?#iefix') format('embedded-opentype'),
+        url('../fonts/HyliaSerifBeta-Regular.woff2') format('woff2'),
+        url('../fonts/HyliaSerifBeta-Regular.woff') format('woff'),
+        url('../fonts/HyliaSerifBeta-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+body,
+html {
+    margin: 0;
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0);
+    overflow: hidden;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+#counter {
+    color: black;
+    font-family: "Hylia Serif Beta";
+    text-transform: uppercase;
+    text-align: center;
+    font-weight: 100;
+    font-size: 30vw;
+    background: -webkit-linear-gradient(135deg, #43ad37 0 25%, #6db539 50% 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+    -webkit-animation: glow 1s ease-in-out infinite alternate;
+    -moz-animation: glow 1s ease-in-out infinite alternate;
+    animation: glow 1s ease-in-out infinite alternate;
+}
+
+.dark {
+    color: white !important;
+}
+
+
+@keyframes glow {
+    from {
+        text-shadow: 0px 0px 20px #D8E386;
+    }
+
+    to {
+        text-shadow: 0px 0px 10px #D8E386;
+    }
+}

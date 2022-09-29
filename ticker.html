@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Stream Overlay</title>
+    <style>
+        body {
+            margin: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 18px;
+            color: white;
+        }
+
+        .overlay__new-donation {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            transition: .5s all ease-in-out;
+            font-size: 18px;
+            color: #000;
+            width: 100%;
+        }
+
+        .overlay__donation-ticker {
+            -webkit-box-flex: 1;
+            -ms-flex: 1 1 33%;
+            flex: 1 1 33%;
+            position: relative;
+            order: 3;
+            overflow: hidden;
+        }
+
+        .overlay__donation {
+            padding-right: 10px;
+            text-align: right;
+            opacity: 0;
+            transition: .5s all ease-in-out;
+            color: #000;
+        }
+
+        .overlay__top-donation {
+            position: absolute;
+            top: 0px;
+            right: 0px;
+            color: #000;
+        }
+
+        .overlay__donation-title {
+            font-size: 12px;
+        }
+
+        .overlay__donation-details {
+            white-space: nowrap;
+            font-size: 18px;
+        }
+
+        .overlay__donation-details>* {
+            white-space: normal;
+            display: inline-block;
+        }
+
+        .active {
+            opacity: 1;
+        }
+    </style>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script type="text/javascript" src="./js/donordrive.api.js"></script>
+    <script>
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        const id = urlParams.get('id');
+        const type = urlParams.get('type') ?? "participant";
+        const eventId = 547; // Extra Life
+        DonorDrive.API.basePath = 'https://www.extra-life.org/api/';
+
+        window.onload = function () {
+            (function poll() {
+                cycleDonationTicker();
+                setTimeout(poll, 15000);
+            })();
+        };
+
+        function formatCurrency(amount) {
+            return amount.toLocaleString('en-US', { style: 'currency', currency: 'USD', currencyDisplay: 'symbol' });
+        }
+
+        function updateTopDonation(data) {
+            var displayName = typeof data[0].displayName == 'undefined' ? 'Anonymous' : data[0].displayName;
+
+            document.getElementById('js-top-donation-name').textContent = displayName;
+            document.getElementById('js-top-donation-amount').textContent = formatCurrency(data[0].sumDonations);
+        }
+
+        function updateMostRecentDonation(data) {
+
+            var displayName = typeof data[0].displayName == 'undefined' ? 'Anonymous' : data[0].displayName;
+            var donationAmount = data[0].amount > 0 ? formatCurrency(data[0].amount) : '';
+
+            document.getElementById('js-most-recent-donation-name').textContent = displayName;
+            document.getElementById('js-most-recent-donation-amount').textContent = donationAmount;
+        }
+
+        function cycleDonationTicker() {
+            if (document.getElementById('js-top-donation').classList.contains('active')) {
+                document.getElementById('js-top-donation').classList.remove('active');
+                document.getElementById('js-most-recent-donation').classList.add('active');
+            } else {
+                document.getElementById('js-most-recent-donation').classList.remove('active');
+                document.getElementById('js-top-donation').classList.add('active');
+            }
+        }
+    </script>
+</head>
+
+<body>
+    <div class="overlay">
+        <div class="overlay__donation-ticker">
+            <div id="js-most-recent-donation" class="overlay__donation active">
+                <div id="most-recent-donation-label" class="overlay__donation-title">Most Recent Donation</div>
+                <div class="overlay__donation-details">
+                    <span id="js-most-recent-donation-name" class="overlay__donation-name"></span>
+                    <span id="js-most-recent-donation-amount" class="overlay__donation-amount"></span>
+                </div>
+            </div>
+            <div id="js-top-donation" class="overlay__donation overlay__top-donation">
+                <div id="js-top-donation-label" class="overlay__donation-title">Top Donor</div>
+                <div class="overlay__donation-details">
+                    <span id="js-top-donation-name" class="overlay__donation-name"></span>
+                    <span id="js-top-donation-amount" class="overlay__donation-amount"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        DonorDrive.API.get(type, id)
+            .watch('participant-data-update')
+            .execute();
+
+        // Top donor
+        DonorDrive.API.get(type + 'Donors', id)
+            .orderBy('sumDonations DESC')
+            .limit(1)
+            .watch('participant-top-donation-update')
+            .execute()
+            .then(
+                function (data) {
+                    updateTopDonation(data);
+                },
+                function () {
+                    updateTopDonation([]);
+                }
+            );
+
+        $('body').on('participant-top-donation-update', function (event, xhr) {
+            xhr.then(
+                function (data) {
+                    updateTopDonation(data);
+                },
+                function () {
+                    updateTopDonation([]);
+                }
+            );
+        });
+
+        // Most Recent Donation
+        DonorDrive.API.get(type + 'Donations', id)
+            .orderBy('createdDateUTC DESC')
+            .limit(1)
+            .watch('participant-recent-donation-update')
+            .execute()
+            .then(
+                function (data) {
+                    var displayName = typeof data[0].displayName == 'undefined' ? 'Anonymous' : data[0].displayName;
+                    var donationAmount = data[0].amount > 0 ? formatCurrency(data[0].amount) : '';
+                    document.getElementById('js-most-recent-donation-name').textContent = displayName;
+                    document.getElementById('js-most-recent-donation-amount').textContent = donationAmount;
+                },
+                function () { }
+            );
+            
+        $('body').on('participant-recent-donation-update', function (event, xhr) {
+            xhr.then(
+                function (data) {
+                    updateMostRecentDonation(data);
+                },
+                function () { }
+            );
+        });
+    </script>
+</body>
+
+</html>
