@@ -25,6 +25,10 @@
             width: 100%;
         }
 
+        .dark {
+            color: #FFF !important;
+        }
+
         .overlay__donation-ticker {
             -webkit-box-flex: 1;
             -ms-flex: 1 1 33%;
@@ -74,6 +78,7 @@
         const urlParams = new URLSearchParams(queryString);
         const id = urlParams.get('id');
         const type = urlParams.get('type') ?? "participant";
+        const dark = (urlParams.get('dark') != null); // Dark Mode
         const eventId = 547; // Extra Life
         DonorDrive.API.basePath = 'https://www.extra-life.org/api/';
 
@@ -136,6 +141,11 @@
         </div>
     </div>
     <script>
+        if (dark) {
+            document.getElementById('js-most-recent-donation').classList.add('dark');
+            document.getElementById('js-top-donation').classList.add('dark');
+        }
+
         DonorDrive.API.get(type, id)
             .watch('participant-data-update')
             .execute();
@@ -181,7 +191,7 @@
                 },
                 function () { }
             );
-            
+
         $('body').on('participant-recent-donation-update', function (event, xhr) {
             xhr.then(
                 function (data) {
