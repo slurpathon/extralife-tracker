@@ -8,5 +8,14 @@ This is a simple tracker for Extra Life donations for Slurpathon.
     - [ ] Remove sample data
 - [x] Stream overlay - counter.html  (or counter.html?dark for use on dark BGs)
     - [ ] Remove sample data
+- [x] Top/Recent tracker - ticker.html  (or ticker.html?dark for use on dark BGs)
 - [ ] Incentive tracker
 - [ ] Bid war tracker
+
+| Endpoint     | Description                      | Parameters                                                                           | Example                                      |
+|--------------|----------------------------------|--------------------------------------------------------------------------------------|----------------------------------------------|
+| index.html   | List of donations, progress bar. | type id                                                                              | index.html?type=team&id=61499                |
+| counter.html | Total sum raised.                | type = participant \| team \| event<br />id = Extra Life ID<br />dark = dark mode (light text) | counter.html?type=participant&id=485795&dark |
+| ticker.html  | Top Donor / most recent donation | type = participant \| team \| event<br />id = Extra Life ID<br />dark = dark mode (light text) | ticker.html?type=team&id=61499&dark          |
+
+All endpoints auto update every 30s.
