@@ -10,7 +10,7 @@ DonorDrive.API = {
     method: '',
     refreshInterval: 30,
     savedEndpoints: {},
-    buildEndpoint: function(endpoint, argument) {
+    buildEndpoint: function (endpoint, argument) {
         switch (endpoint) {
             case 'event':
                 return 'events/' + argument;
@@ -91,13 +91,14 @@ DonorDrive.API = {
                 return 'participants';
         }
     },
-    checkForUpdates: function(key) {
+    checkForUpdates: function (key) {
         if (!DonorDrive.API.savedEndpoints[key].hasOwnProperty('url')) {
             console.warn('Invalid endpoint url for "' + key + '"');
             var deferred = $.Deferred();
             deferred.reject();
             return deferred;
         }
+
         return $.ajax({
             type: 'GET',
             url: DonorDrive.API.savedEndpoints[key].url,
@@ -112,12 +113,14 @@ DonorDrive.API = {
                         $('body').trigger(DonorDrive.API.savedEndpoints[key].updateEventName, DonorDrive.API.savedEndpoints[key].promise);
                     }
                 } else if (xhr.status == 404) {
-                    DonorDrive.API.unWatch();
+                    // DonorDrive.API.unWatch();
                 }
             }
         });
+
+        return
     },
-    execute: function(options) {
+    execute: async function (options) {
         if (typeof options === 'undefined') {
             options = {};
         }
@@ -150,8 +153,32 @@ DonorDrive.API = {
             });
         }
         return this.savedEndpoints[hashedEndpoint].promise;
+        /*
+                    var promise = await fetch(url, {
+                        method: this.method,
+                        headers: Object.assign({}, this.headers, this.globalHeaders),
+                        cache: "no-store"
+                    });
+        
+                    var json = await promise.json();
+                    
+                    console.log(`Got response from ${url}`);
+                    console.log(json);
+                    DonorDrive.API.savedEndpoints[hashedEndpoint].etag = promise.headers.get('Etag');
+                    
+                    if (typeof options.saveEndpoint !== 'undefined' && !options.saveEndpoint) {
+                        return promise;
+                    }
+                    Object.assign(this.savedEndpoints[hashedEndpoint], {
+                        endpoint: this.baseEndpoint,
+                        promise: promise,
+                        url: url
+                    });
+                }
+                return json;
+                */
     },
-    get: function(endpoint, argument) {
+    get: function (endpoint, argument) {
         this.validateConfig();
         this.baseEndpoint = this.apiVersion + '/' + this.buildEndpoint(endpoint, argument);
         this.method = 'get';
@@ -161,22 +188,22 @@ DonorDrive.API = {
         this.whereClause = '';
         return this;
     },
-    hash: function(string) {
+    hash: function (string) {
         return string.replace(/[^a-z0-9]/ig, '_');
     },
-    limit: function(limit) {
+    limit: function (limit) {
         this.limitClause = '&limit=' + limit;
         return this;
     },
-    offset: function(offset) {
+    offset: function (offset) {
         this.offsetClause = '&offset=' + offset;
         return this;
     },
-    orderBy: function(statement) {
+    orderBy: function (statement) {
         this.orderByClause = '&orderBy=' + encodeURIComponent(statement);
         return this;
     },
-    refreshData: function() {
+    refreshData: function () {
         var key, prerequisiteHashedEndpoint, updateQueue = {};
         for (key in this.savedEndpoints) {
             if (this.savedEndpoints[key].autoRefresh) {
@@ -204,7 +231,7 @@ DonorDrive.API = {
             }
         }
         for (key in updateQueue) {
-            DonorDrive.API.checkForUpdates(key).done(function(d, t, x) {
+            DonorDrive.API.checkForUpdates(key).done(function (d, t, x) {
                 if (x.status == 200) {
                     for (var i = 0; i < updateQueue[key].length; i++) {
                         DonorDrive.API.checkForUpdates(updateQueue[key][i]);
@@ -213,7 +240,7 @@ DonorDrive.API = {
             });
         }
     },
-    unWatch: function() {
+    unWatch: function () {
         var url = this.basePath + this.baseEndpoint,
             additionalClauses = this.limitClause + this.offsetClause + this.orderByClause + this.whereClause;
         if (additionalClauses.length > 0) {
@@ -227,13 +254,13 @@ DonorDrive.API = {
         clearInterval(window.apiIntervalCheck);
         return this;
     },
-    validateConfig: function() {
+    validateConfig: function () {
         if (!this.basePath) {
             throw new Error('API config invalid. Please define a basePath for the object.');
         }
         return this;
     },
-    watch: function(eventName) {
+    watch: function (eventName) {
         var url = this.basePath + this.baseEndpoint,
             additionalClauses = this.limitClause + this.offsetClause + this.orderByClause + this.whereClause;
         if (additionalClauses.length > 0) {
@@ -253,13 +280,13 @@ DonorDrive.API = {
             updateEventName: eventName
         });
         if (!window.apiIntervalCheck) {
-            window.apiIntervalCheck = setInterval(function() {
+            window.apiIntervalCheck = setInterval(function () {
                 DonorDrive.API.refreshData();
             }, DonorDrive.API.refreshInterval * 1000);
         }
         return this;
     },
-    where: function(statement) {
+    where: function (statement) {
         this.whereClause = '&where=' + encodeURIComponent(statement);
         return this;
     }
