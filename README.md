@@ -12,6 +12,8 @@ This is a simple tracker for Extra Life donations for Slurpathon.
 - [ ] Incentive tracker
 - [ ] Bid war tracker
 
+## Endpoints
+
 | Endpoint     | Description                      | Parameters                                                                           | Example                                      |
 |--------------|----------------------------------|--------------------------------------------------------------------------------------|----------------------------------------------|
 | index.html   | List of donations, progress bar. | type id                                                                              | index.html?type=team&id=61499                |
@@ -19,3 +21,7 @@ This is a simple tracker for Extra Life donations for Slurpathon.
 | ticker.html  | Top Donor / most recent donation | type = participant \| team \| event<br />id = Extra Life ID<br />dark = dark mode (light text) | ticker.html?type=team&id=61499&dark          |
 
 All endpoints auto update every 30s.
+
+## Credits
+
+* Much learning was acquired from the [Extra Life Stream Overlay](https://www.extra-life.org/index.cfm?fuseaction=donorDrive.streamingOverlay&eventID=547&participantID=485795)
