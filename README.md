@@ -16,9 +16,9 @@ This is a simple tracker for Extra Life donations for Slurpathon.
 
 | Endpoint     | Description                      | Parameters                                                                           | Example                                      |
 |--------------|----------------------------------|--------------------------------------------------------------------------------------|----------------------------------------------|
-| index.html   | List of donations, progress bar. | `type` = participant \| team \| event<br />`id` = Extra Life ID            | index.html?type=team&id=61499                |
-| counter.html | Counter of total sum raised.     | `type` = participant \| team \| event<br />`id` = Extra Life ID<br />`dark` = dark mode (light text) | counter.html?type=participant&id=485795&dark |
-| ticker.html  | Top Donor / most recent donation | `type` = participant \| team \| event<br />`id` = Extra Life ID<br />`dark` = dark mode (light text) | ticker.html?type=team&id=61499&dark          |
+| index.html   | List of donations, progress bar. | `type` = participant \| team \| event<br />`id` = Extra Life ID            | https://slurpathon.github.io/extralife-tracker/index.html?type=team&id=61499                |
+| counter.html | Counter of total sum raised.     | `type` = participant \| team \| event<br />`id` = Extra Life ID<br />`dark` = dark mode (light text) | https://slurpathon.github.io/extralife-tracker/counter.html?type=participant&id=485795&dark |
+| ticker.html  | Top Donor / most recent donation | `type` = participant \| team \| event<br />`id` = Extra Life ID<br />`dark` = dark mode (light text) | https://slurpathon.github.io/extralife-tracker/ticker.html?type=team&id=61499&dark          |
 
 All endpoints auto update every 30s.
 
