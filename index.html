@@ -61,7 +61,7 @@
         window.onload = function () {
             PreparePage();
         };
-
+        
         function PreparePage() {
             DonorDrive.API.get(type, id)
                 .execute()
@@ -176,7 +176,7 @@
 
             donor = document.createElement('span');
             donor.classList.add('charity-leaderboard__donor-name');
-            donor.innerHTML = `${donation.displayName ? donation.displayName : 'Anonymous'} (${jQuery.timeago(donation.createdDateUTC)})`;
+            donor.innerHTML = `${donation.displayName ? donation.displayName : 'Anonymous'} (<time class="timeago" datetime="${donation.createdDateUTC}"></time>)`;
 
             amount = document.createElement('span');
             amount.classList.add('charity-leaderboard__donation-amount');
@@ -196,6 +196,8 @@
             while (table.children.length > donationLimit) {
                 table.removeChild(table.children[table.children.length - 1]);
             }
+
+            jQuery("time.timeago").timeago();
         }
 
         /**
