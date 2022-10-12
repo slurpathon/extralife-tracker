@@ -102,11 +102,13 @@
             .watch('participant-data-update')
             .execute()
             .then((data) => {
+                console.log("participant-data-update 1");
                 UpdateValues(data.sumDonations, data.fundraisingGoal);
             });
 
         $('body').on('participant-data-update', function (event, xhr) {
             xhr.then((data) => {
+                console.log("participant-data-update 2");
                 UpdateValues(data.sumDonations, data.fundraisingGoal);
             });
         });
@@ -118,10 +120,13 @@
             .watch('participant-donation-update')
             .execute()
             .then((data) => {
+                console.log("participant-donation-update 1");
                 UpdateLeaderboard(data);
             });
-        $('body').on('participant-recent-donation-update', function (event, xhr) {
+
+        $('body').on('participant-donation-update', function (event, xhr) {
             xhr.then((data) => {
+                console.log("participant-donation-update 2");
                 UpdateLeaderboard(data);
             });
         });
