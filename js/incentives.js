@@ -217,7 +217,7 @@ async function Main(predata = null) {
             for (const property in choices) {
                 let obj = {
                     name: `${property} $${choices[property]}`,
-                    percent: (incentive.sum == 0) ? 1 / choices.count() : choices[property] / incentive.sum,
+                    percent: (incentive.sum == 0) ? (1 / choices.length) : (choices[property] / incentive.sum),
                     color: colors[i]
                 }
                 arr.push(obj);
