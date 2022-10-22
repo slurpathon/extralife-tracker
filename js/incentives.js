@@ -214,12 +214,13 @@ async function Main(predata = null) {
         let i = 0;
         if (type == "bid war") {
             let choices = incentive.choices;
+            let totalChoices = Object.keys(choices).length;
             for (const property in choices) {
-                console.log(choices.length);
-                console.log((1 / choices.length));
+                console.log(totalChoices);
+                console.log((1 / totalChoices));
                 let obj = {
                     name: `${property} $${choices[property]}`,
-                    percent: (incentive.sum == 0) ? (1 / choices.length) : (choices[property] / incentive.sum),
+                    percent: (incentive.sum == 0) ? (1 / totalChoices) : (choices[property] / incentive.sum),
                     color: colors[i]
                 }
                 arr.push(obj);
