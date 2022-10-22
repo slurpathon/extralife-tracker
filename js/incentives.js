@@ -215,6 +215,8 @@ async function Main(predata = null) {
         if (type == "bid war") {
             let choices = incentive.choices;
             for (const property in choices) {
+                console.log(choices.length);
+                console.log((1 / choices.length));
                 let obj = {
                     name: `${property} $${choices[property]}`,
                     percent: (incentive.sum == 0) ? (1 / choices.length) : (choices[property] / incentive.sum),
