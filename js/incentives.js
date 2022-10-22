@@ -184,7 +184,7 @@ async function PlaySlide(title, arr) {
 async function Main(predata = null) {
     let data;
     const colors = [
-        "#EAB8D5",
+        "#EAB8D5", // !This color is too light
         "#CC3F61",
         "#52C6DC",
         "#EB75A6",
@@ -217,13 +217,14 @@ async function Main(predata = null) {
             for (const property in choices) {
                 let obj = {
                     name: `${property} $${choices[property]}`,
-                    percent: choices[property] / incentive.sum,
+                    percent: (incentive.sum == 0) ? 1 / choices.count() : choices[property] / incentive.sum,
                     color: colors[i]
                 }
                 arr.push(obj);
                 i++;
             }
         } else if (type == "goal") {
+            //! Make foreground red for incomplete and green for completed against white BG
             arr = [{
                 name: `$${incentive.total} / $${incentive.goal}`,
                 percent: incentive.total / incentive.goal,
