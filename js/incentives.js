@@ -184,7 +184,6 @@ async function PlaySlide(title, arr) {
 async function Main(predata = null) {
     let data;
     const colors = [
-        "#EAB8D5", // !This color is too light
         "#CC3F61",
         "#52C6DC",
         "#EB75A6",
@@ -192,7 +191,8 @@ async function Main(predata = null) {
         "#92E3F2",
         "#46220F",
         "#D59D88",
-        "#F3EAF9"
+        "#F3EAF9",
+        "#EAB8D5" // !This color is too light
     ];
 
     if (predata == null) {
