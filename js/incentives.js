@@ -216,8 +216,6 @@ async function Main(predata = null) {
             let choices = incentive.choices;
             let totalChoices = Object.keys(choices).length;
             for (const property in choices) {
-                console.log(totalChoices);
-                console.log((1 / totalChoices));
                 let obj = {
                     name: `${property} $${choices[property]}`,
                     percent: (incentive.sum == 0) ? (1 / totalChoices) : (choices[property] / incentive.sum),
