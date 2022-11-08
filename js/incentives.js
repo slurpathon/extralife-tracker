@@ -114,7 +114,8 @@ async function BuildSlide(title, arr) {
     let progress = document.createElement('div');
     progress.classList.add('bro-progress');
 
-    let counters = []
+    let counters = [];
+    let remainderText = "";
 
     // Create counters
     for (const el of arr) {
@@ -122,14 +123,14 @@ async function BuildSlide(title, arr) {
         left.classList.add('bro-bar', 'bro-counter', 'bro-left');
         left.innerHTML = el.name;
         left.setAttribute("data-width", el.percent * 100);
-        left.style.backgroundColor = el.color;
-
-        // If completed...
-        if(el.percent === 1) {
-            left.style.backgroundColor = "#4CBB17";
-        }
-
+        left.style.backgroundColor = (el.hasOwnProperty('complete') && el.complete == true) ? "#4CBB17" : el.color;
         counters.push(left);
+
+        // Hack for goals. Not very clean but it works.
+        if(el.percent < 0.15) {
+            left.innerHTML = "";
+            remainderText = el.name;
+        }
     }
 
     // Add counters to DOM
@@ -140,6 +141,7 @@ async function BuildSlide(title, arr) {
     // Create the rest of the remaining bar
     let right = document.createElement('div');
     right.classList.add('bro-bar', 'bro-remainder');
+    right.innerHTML = remainderText;
     progress.appendChild(right);
 
     // Create the title
@@ -234,6 +236,7 @@ async function Main(predata = null) {
             arr = [{
                 name: `$${incentive.total} / $${incentive.goal}`,
                 percent: incentive.total / incentive.goal,
+                complete: (incentive.total / incentive.goal) >= 1,
                 color: colors[0]
             }];
         }
