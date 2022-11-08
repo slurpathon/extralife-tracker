@@ -127,7 +127,7 @@ async function BuildSlide(title, arr) {
         counters.push(left);
 
         // Hack for goals. Not very clean but it works.
-        if(el.percent < 0.15) {
+        if(el.percent < 0.15 && el.type == "goal") {
             left.innerHTML = "";
             remainderText = el.name;
         }
@@ -227,7 +227,8 @@ async function Main(predata = null) {
                 let obj = {
                     name: `${property} $${choices[property]}`,
                     percent: (incentive.sum == 0) ? (1 / totalChoices) : (choices[property] / incentive.sum),
-                    color: colors[i]
+                    color: colors[i],
+                    type: "war"
                 }
                 arr.push(obj);
                 i++;
@@ -237,7 +238,8 @@ async function Main(predata = null) {
                 name: `$${incentive.total} / $${incentive.goal}`,
                 percent: incentive.total / incentive.goal,
                 complete: (incentive.total / incentive.goal) >= 1,
-                color: colors[0]
+                color: colors[0],
+                type: "goal"
             }];
         }
 
