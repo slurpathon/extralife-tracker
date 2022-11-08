@@ -123,6 +123,12 @@ async function BuildSlide(title, arr) {
         left.innerHTML = el.name;
         left.setAttribute("data-width", el.percent * 100);
         left.style.backgroundColor = el.color;
+
+        // If completed...
+        if(el.percent === 1) {
+            left.style.backgroundColor = "#4CBB17";
+        }
+
         counters.push(left);
     }
 
@@ -225,7 +231,6 @@ async function Main(predata = null) {
                 i++;
             }
         } else if (type == "goal") {
-            //! Make foreground red for incomplete and green for completed against white BG
             arr = [{
                 name: `$${incentive.total} / $${incentive.goal}`,
                 percent: incentive.total / incentive.goal,

@@ -5,9 +5,9 @@ Work in progress.
 This is a simple tracker for Extra Life donations for Slurpathon.
 
 - [x] Web tracker - index.html
-    - [ ] Remove sample data
+    - [x] Remove sample data
 - [x] Stream overlay - counter.html  (or counter.html?dark for use on dark BGs)
-    - [ ] Remove sample data
+    - [x] Remove sample data
 - [x] Top/Recent tracker - ticker.html  (or ticker.html?dark for use on dark BGs)
 - [ ] Incentive tracker
 - [ ] Bid war tracker
