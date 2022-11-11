@@ -44,6 +44,8 @@ body {
 }
 
 .bro-counter {
+  line-height: 0.8em;
+
   opacity: 1;
 
   /* Give the width a starting value */
@@ -78,4 +80,7 @@ body {
 
 .bro-left2 {
   background-color: blue;
+}
+.bidwar-amount {
+  font-size: 0.8em;
 }

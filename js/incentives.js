@@ -11,6 +11,8 @@ const sheetUrl = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/value
 const timer = urlParams.get('timer');
 const slideTimer = (timer != null) ? timer : 5000;
 
+const currencySymbol = "$";
+
 /* =================== GOOGLE =================== */
 // Grab data from Google Sheets API
 async function GetData() {
@@ -121,13 +123,24 @@ async function BuildSlide(title, arr) {
     for (const el of arr) {
         let left = document.createElement('div');
         left.classList.add('bro-bar', 'bro-counter', 'bro-left');
-        left.innerHTML = el.name;
+
+        let name = document.createElement('div');
+        name.innerHTML = el.name;
+
+        if (el.hasOwnProperty('amount')) {
+            let amt = document.createElement('span');
+            amt.classList.add('bidwar-amount');
+            amt.innerHTML = "<br />" + currencySymbol + el.amount;
+            name.appendChild(amt);
+        }
+
+        left.appendChild(name);
         left.setAttribute("data-width", el.percent * 100);
         left.style.backgroundColor = (el.hasOwnProperty('complete') && el.complete == true) ? "#4CBB17" : el.color;
         counters.push(left);
 
         // Hack for goals. Not very clean but it works.
-        if(el.percent < 0.15 && el.type == "goal") {
+        if (el.percent < 0.15 && el.type == "goal") {
             left.innerHTML = "";
             remainderText = el.name;
         }
@@ -223,11 +236,12 @@ async function Main(predata = null) {
         if (type == "bid war") {
             let choices = incentive.choices;
             let totalChoices = Object.keys(choices).length;
-            let minWidth = 0.1;
+            let minWidth = 0.2;
 
             for (const property in choices) {
                 let obj = {
-                    name: `${property} $${choices[property]}`,
+                    name: property,
+                    amount: choices[property],
                     percent: (incentive.sum == 0) ? (1 / totalChoices) : (choices[property] / incentive.sum),
                     color: colors[i],
                     type: "war"
@@ -237,14 +251,20 @@ async function Main(predata = null) {
             }
 
             // Fix for having only one non-zero entity in a bidwar
-            let zero = arr.filter(x => x.percent == 0).length;
-            let nonzero = arr.filter(x => x.percent > 0).length;
-            
-            for (var j = 0; j < arr.length; j++) { 
-                if (arr[j].percent == 0) {
+            let zero = arr.filter(x => x.percent < minWidth).length;
+            let nonzero = arr.filter(x => x.percent >= minWidth).length;
+
+            let sum = arr.reduce((accumulator, object) => {
+                return (object.percent < minWidth) ? accumulator + object.percent : accumulator;
+            }, 0);
+
+            let reduction = ((zero * minWidth) - sum) / nonzero;
+
+            for (var j = 0; j < arr.length; j++) {
+                if (arr[j].percent < minWidth) {
                     arr[j].percent = minWidth;
                 } else if (zero > 0) {
-                    arr[j].percent = arr[j].percent - (minWidth / nonzero);
+                    arr[j].percent = arr[j].percent - reduction;
                 }
             }
         } else if (type == "goal") {
@@ -267,7 +287,7 @@ async function LetsGo() {
     let i = 3;
     let cache;
     while (true) {
-        if(i >= 3) {
+        if (i >= 3) {
             cache = await Main();
             i = 0;
         } else {
