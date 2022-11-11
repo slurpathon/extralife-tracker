@@ -237,12 +237,13 @@ async function Main(predata = null) {
             }
 
             // Fix for having only one non-zero entity in a bidwar
+            let zero = arr.filter(x => x.percent == 0).length;
             let nonzero = arr.filter(x => x.percent > 0).length;
             
             for (var j = 0; j < arr.length; j++) { 
                 if (arr[j].percent == 0) {
                     arr[j].percent = minWidth;
-                } else {
+                } else if (zero > 0) {
                     arr[j].percent = arr[j].percent - (minWidth / nonzero);
                 }
             }
