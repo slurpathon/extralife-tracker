@@ -56,7 +56,6 @@ body {
   color: hsl(var(--offwhite));
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .bro-remainder {
