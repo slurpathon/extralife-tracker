@@ -408,6 +408,11 @@ function GetTransitionEndEventName() {
     }
 }
 
+const sumValues = obj => Object.values(obj).reduce((a, b) => a + b, 0);
+
+
+// TODO: refactor PlayGoalSlide and PlayWarSlide into 1 function with an enum param (war vs goal)
+
 /**
 * Creates, animates, and removes a slide for a goal incentive
 * @param {String} title The name of the incentive
@@ -449,8 +454,6 @@ async function PlayGoalSlide(title, incentiveObj) {
 
     return Promise.resolve();
 }
-
-const sumValues = obj => Object.values(obj).reduce((a, b) => a + b, 0);
 
 /**
 * Creates, animates, and removes a slide for a goal incentive
