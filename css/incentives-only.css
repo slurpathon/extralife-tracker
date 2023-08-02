@@ -32,6 +32,7 @@ body {
   display: flex;
   height: 50px;
   margin: 0;
+  background-color: lightblue;
 }
 
 .bro-bar {
@@ -75,7 +76,13 @@ body {
 }
 
 .bro-left {
-  background-color: green;
+  width: 0%;
+  height: 100%;
+  border-radius: 0 30px 0 0;
+  background-image: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+  transition: width 200ms;
+  animation: gradient 5s ease infinite;
+  background-size: 400% 400%;
 }
 
 .bro-left2 {
@@ -83,4 +90,17 @@ body {
 }
 .bidwar-amount {
   font-size: 0.8em;
+}
+
+
+@keyframes gradient {
+	0% {
+		background-position: 0% 50%;
+	}
+	50% {
+		background-position: 100% 50%;
+	}
+	100% {
+		background-position: 0% 50%;
+	}
 }
