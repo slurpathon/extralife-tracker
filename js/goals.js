@@ -99,202 +99,7 @@ async function getProcessedData() {
     });
 }
 
-/* =================== SLIDESHOW =================== */
-/*
-// using above code we can get Transition end event name
-const transitionEndEventName = GetTransitionEndEventName();
-
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-function GetTransitionEndEventName() {
-    var transitions = {
-        "transition": "transitionend",
-        "OTransition": "oTransitionEnd",
-        "MozTransition": "transitionend",
-        "WebkitTransition": "webkitTransitionEnd"
-    }
-    let bodyStyle = document.body.style;
-    for (let transition in transitions) {
-        if (bodyStyle[transition] != undefined) {
-            return transitions[transition];
-        }
-    }
-}
-
-async function BuildSlide(title, arr) {
-    // Create the overall bar
-    let progress = document.createElement('div');
-    progress.classList.add('bro-progress');
-
-    let counters = [];
-    let remainderText = "";
-
-    // Create counters
-    for (const el of arr) {
-        let left = document.createElement('div');
-        left.classList.add('bro-bar', 'bro-counter', 'bro-left');
-
-        let name = document.createElement('div');
-        name.innerHTML = el.name;
-
-        if (el.hasOwnProperty('amount')) {
-            let amt = document.createElement('span');
-            amt.classList.add('bidwar-amount');
-            amt.innerHTML = "<br />" + currencySymbol + el.amount;
-            name.appendChild(amt);
-        }
-
-        left.appendChild(name);
-        left.setAttribute("data-width", el.width * 100);
-        //left.style.backgroundColor = (el.hasOwnProperty('complete') && el.complete == true) ? "#4CBB17" : el.color;
-        counters.push(left);
-
-        // Hack for goals. Not very clean but it works.
-        if (el.width < 0.15 && el.type == "goal") {
-            left.innerHTML = "";
-            remainderText = el.name;
-        }
-    }
-
-    // Add counters to DOM
-    for (const counter of counters) {
-        progress.appendChild(counter);
-    }
-
-    // Create the rest of the remaining bar
-
-
-    // Create the title
-    let descriptor = document.createElement('div');
-    descriptor.innerHTML = title;
-    descriptor.classList.add('descriptor');
-
-    // Create the container
-    let slide = document.createElement('div');
-    slide.classList.add('slide');
-    slide.appendChild(descriptor);
-    slide.appendChild(progress);
-
-    return slide;
-}
-
-async function PlaySlide(title, arr) {
-    let slide = await BuildSlide(title, arr);
-
-    // Add the bar to the page
-    let main = document.getElementsByTagName('main')[0];
-    main.appendChild(slide);
-
-    // Animate the values
-    await sleep(100);
-    slide.style.opacity = 1;
-
-    // Set width
-    var els = document.getElementsByClassName("bro-counter");
-    Array.from(els).forEach((el) => {
-        el.style.width = el.getAttribute('data-width') + '%';
-    });
-
-    await sleep(slideTimer);
-    slide.style.opacity = 0;
-
-    await new Promise((resolve) => {
-        slide.addEventListener(transitionEndEventName, resolve, { once: true });
-    });
-
-    slide.remove();
-
-    return Promise.resolve();
-}
-*/
-/* =================== PUT IT ALL TOGETHER =================== */
-
-/*
-async function Main(predata = null) {
-    let data;
-    const colors = [
-        "#CC3F61",
-        "#52C6DC",
-        "#EB75A6",
-        "#BA7A39",
-        "#92E3F2",
-        "#46220F",
-        "#D59D88",
-        "#F3EAF9",
-        "#EAB8D5" // !This color is too light
-    ];
-
-    if (predata == null) {
-        console.log('Live data');
-        let raw = await GetData();
-
-        let filtered = FilterCurrentIncentives(raw);
-        let parsed = ProcessValues(filtered);
-        data = CalculateBidWarTotals(parsed);
-    } else {
-        console.log('Cached data');
-        data = predata;
-    }
-
-    for (const incentive of data) {
-        let title = incentive.combinedname;
-        let type = incentive.type.toLowerCase();
-        let arr = [];
-        let i = 0;
-        if (type == "bid war") {
-            let choices = incentive.choices;
-            let totalChoices = Object.keys(choices).length;
-
-            for (const property in choices) {
-                let obj = {
-                    name: property,
-                    amount: choices[property],
-                    width: (1 / totalChoices),
-                    percent: choices[property] / incentive.sum,
-                    color: colors[i],
-                    type: "war"
-                }
-                arr.push(obj);
-                i++;
-            }
-        } else if (type == "goal") {
-            arr = [{
-                name: `$${incentive.total} / $${incentive.goal}`,
-                percent: incentive.total / incentive.goal,
-                width: incentive.total / incentive.goal,
-                complete: (incentive.total / incentive.goal) >= 1,
-                color: colors[0],
-                type: "goal"
-            }];
-        }
-
-        await PlaySlide(title, arr);
-    }
-
-    return Promise.resolve(data);
-}
-
-async function LetsGo() {
-    let i = 3;
-    let cache;
-    while (true) {
-        if (i >= 3) {
-            cache = await Main();
-            i = 0;
-        } else {
-            await Main(cache);
-        }
-        i++;
-    }
-}
-
-//LetsGo();
-*/
-
-
-/* New Stuff */
+/* =================== Progress bars =================== */
 
 /**
 * Creates a parent div for a progress bar. Abstracted out because wars need multiple bars within one parent div.
@@ -317,13 +122,23 @@ function createIncentiveDiv(title) {
 }
 
 /**
+* Creates an inner div for a progress bar. Abstracted out because wars need multiple bars within one parent div.
+* @return {HTMLDivElement} The div containing the progress bar elements.
+*/
+function createIncentiveInnerDiv() {
+    const incentiveInnerContainer = document.createElement('div');
+    incentiveInnerContainer.classList.add("incentive-inner-container");
+    return incentiveInnerContainer;
+}
+
+
+/**
 * Creates a progress bar element
 * @param {String} title The text to appear above the progress bar
 * @param {String} id A unique ID to append to the divs that have ID attributes.
 * @return {HTMLDivElement} The div containing the progress bar elements.
 */
 function createProgressBar(id) {
-
 
     const progressBarContainer = document.createElement('div');
     progressBarContainer.classList.add("progress-bar-container");
@@ -348,28 +163,9 @@ function createProgressBar(id) {
 * @param {String} progressBarId The unique ID given to the progress bar when createProgressBar was called.
 * @param {Number} currentAmount The current amount raised (numerator)
 * @param {Number} goalAmount The goal amount (denominator)
-*/
-async function updateGoalProgressBar(progressBarId, currentAmount, goalAmount) {
-    // Wait for 1ms to trigger the initial animation.
-    await new Promise(r => setTimeout(r, 1));
-
-    const progressBar = document.getElementById(`progress-bar-${progressBarId}`);
-    const progressLabel = document.getElementById(`progress-label-${progressBarId}`);
-
-    const percent = (currentAmount / goalAmount) * 100;
-
-    progressBar.style.width = percent + "%";
-    progressLabel.innerText = `$${currentAmount} / $${goalAmount}`;
-}
-
-/**
-* Updates a given progress bar element with incentive amounts (and goals)
-* @param {String} progressBarId The unique ID given to the progress bar when createProgressBar was called.
-* @param {Number} currentAmount The current amount raised (numerator)
-* @param {Number} goalAmount The goal amount (denominator)
 * @param {Boolean} title The title of the choice
 */
-async function updateWarProgressBar(progressBarId, currentAmount, goalAmount, title) {
+async function updateProgressBar(progressBarId, currentAmount, goalAmount, title = null) {
     // Wait for 1ms to trigger the initial animation.
     await new Promise(r => setTimeout(r, 1));
 
@@ -379,10 +175,15 @@ async function updateWarProgressBar(progressBarId, currentAmount, goalAmount, ti
     const percent = (currentAmount / goalAmount) * 100;
 
     progressBar.style.width = percent + "%";
-    progressLabel.innerText = `${title} $${currentAmount} (${percent.toFixed(0)}%)`;
+    if(title != null) {
+        progressLabel.innerText = `${title} ${currencySymbol}${currentAmount} (${percent.toFixed(0)}%)`;
+    } else {
+        progressLabel.innerText = `${currencySymbol}${currentAmount} / ${currencySymbol}${goalAmount}`;
+    }
 }
 
-/* Slides */
+/* =================== Slides =================== */
+
 const transitionEndEventName = GetTransitionEndEventName();
 
 /**
@@ -410,49 +211,42 @@ function GetTransitionEndEventName() {
 
 const sumValues = obj => Object.values(obj).reduce((a, b) => a + b, 0);
 
-
-// TODO: refactor PlayGoalSlide and PlayWarSlide into 1 function with an enum param (war vs goal)
-
-/**
-* Creates, animates, and removes a slide for a goal incentive
-* @param {String} title The name of the incentive
-* @param {Object} incentiveObj The incentive object (needs at least a property for total and a property for goal)
-* @param {Number} goalAmount The goal amount (denominator)
-*/
-async function PlayGoalSlide(title, incentiveObj) {
-    let slideId = btoa(title);
-    
+function CreateWarSlide (title, choices) {
     let slide = createIncentiveDiv(title);
+    let inner = createIncentiveInnerDiv();
+    for (const choice in choices) {
+        let slideId = btoa(choice);
+        inner.appendChild(createProgressBar(slideId));
+    }
+    slide.appendChild(inner);
+    return slide;
+}
+
+function UpdateWarSlide(choices) {
+    const sumChoices = sumValues(choices).toFixed(2);
+    for (const choice in choices) {
+        let slideId = btoa(choice);
+        let currAmount = choices[choice].toFixed(2);
+        updateProgressBar(slideId, currAmount, sumChoices, choice);
+    }
+}
+
+function CreateGoalSlide (title, choices) {
+    let slide = createIncentiveDiv(title);
+    let slideId = btoa(title);
     let bar = createProgressBar(slideId);
     slide.appendChild(bar);
+    return slide;
+}
 
-    // Add the bar to the page
-    let main = document.getElementsByTagName('main')[0];
-    main.appendChild(slide);
-
-    // Fade in
-    await sleep(100);
-    slide.style.opacity = 1;
-
+function UpdateGoalSlide(title, incentiveObj) {
+    let slideId = btoa(title);
     // Round the stuff
     let total = incentiveObj.total.toFixed(2);
     let goal = incentiveObj.goal.toFixed(2);
 
     // PULL THE LEVER, KRONK
-    updateGoalProgressBar(slideId, total, goal);
-
-    // Fade out
-    await sleep(slideTimer);
-    slide.style.opacity = 0;
-
-    // When the transition is complete, we delete the DOM object.
-    await new Promise((resolve) => {
-        slide.addEventListener(transitionEndEventName, resolve, { once: true });
-    });
-
-    slide.remove();
-
-    return Promise.resolve();
+    updateProgressBar(slideId, total, goal);
 }
 
 /**
@@ -461,18 +255,15 @@ async function PlayGoalSlide(title, incentiveObj) {
 * @param {Array} arr Array of incentive objects (needs at least a property for total and a property for goal)
 * @param {Number} goalAmount The goal amount (denominator)
 */
-async function PlayWarSlide(title, choices) {
-    let slide = createIncentiveDiv(title);
+async function PlaySlide(title, choices, isWar = false) {
+    let slide;
 
-    let progressBarArr = []
-
-    const sumChoices = sumValues(choices).toFixed(2);;
-
-    for (const choice in choices) {
-        let slideId = btoa(choice);
-        slide.appendChild(createProgressBar(slideId));
+    if (isWar) {
+        slide = CreateWarSlide (title, choices);
+    } else {
+        slide = CreateGoalSlide (title, choices);
     }
-    
+
     // Add the bar to the page
     let main = document.getElementsByTagName('main')[0];
     main.appendChild(slide);
@@ -482,10 +273,10 @@ async function PlayWarSlide(title, choices) {
     slide.style.opacity = 1;
 
     // PULL THE LEVER, KRONK
-    for (const choice in choices) {
-        let slideId = btoa(choice);
-        let currAmount = choices[choice].toFixed(2);
-        updateWarProgressBar(slideId, currAmount, sumChoices, choice);
+    if (isWar) {
+        UpdateWarSlide(choices);
+    } else {
+        UpdateGoalSlide(title, choices);
     }
 
     // Fade out
@@ -502,7 +293,7 @@ async function PlayWarSlide(title, choices) {
     return Promise.resolve();
 }
 
-/* Main Thread */
+/* =================== Main Thread =================== */
 
 async function PlaySlideshow(cacheData = null) {
     let data = cacheData;
@@ -517,9 +308,9 @@ async function PlaySlideshow(cacheData = null) {
 
         if (type == "bid war") {
             let choices = incentive.choices;
-            await PlayWarSlide(title, choices);
+            await PlaySlide(title, choices, true);
         } else if (type == "goal") {
-            await PlayGoalSlide(title, incentive);
+            await PlaySlide(title, incentive, false);
         }
     }
 }
