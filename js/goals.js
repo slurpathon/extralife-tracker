@@ -172,7 +172,8 @@ async function updateProgressBar(progressBarId, currentAmount, goalAmount, title
     const progressBar = document.getElementById(`progress-bar-${progressBarId}`);
     const progressLabel = document.getElementById(`progress-label-${progressBarId}`);
 
-    const percent = (currentAmount / goalAmount) * 100;
+    let percent = (currentAmount / goalAmount) * 100;
+    percent = isNaN(percent) ? 0 : percent;
 
     progressBar.style.width = percent + "%";
     if(title != null) {
