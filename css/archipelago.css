@@ -1,0 +1,131 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@500;700&display=swap');
+
+*,
+*::after,
+*::before {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+body, main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+    margin: 0;
+    background-color: #f7f7f7;
+    background-color: #000;
+    font-size: 1.1em;
+}
+
+.progress-title {
+    color: #f7f7f7;
+    margin-left: 3px;
+}
+
+.incentive-container {
+    width: 100%;
+    max-width: 100%;
+    height: 80px;
+    overflow: hidden;
+    position: relative;
+
+    /* Enable transition of opacity */
+    transition: opacity 2s ease-in-out;
+}
+
+.incentive-inner-container {
+    width:  100%;
+    height: 100%;
+    display: flex;
+}
+
+.progress-bar-container-blue {
+    width: 100%;
+    max-width: 100%;
+    height: calc(100% - 23px);
+    background-color: #78c2ec;
+    border-radius: 5px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    position: relative;
+    margin: 0 3px 0 3px;
+}
+
+.progress-bar-container-red {
+    width: 100%;
+    max-width: 100%;
+    height: calc(100% - 23px);
+    background-color: #f56262;
+    border-radius: 5px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    position: relative;
+    margin: 0 3px 0 3px;
+}
+
+.progress-bar-blue {
+    width: 0;
+    height: 100%;
+    background-color: #3f9cd1;
+    background-image: linear-gradient(-45deg,
+            rgba(255, 255, 255, 0.2) 25%,
+            transparent 25%,
+            transparent 50%,
+            rgba(255, 255, 255, 0.2) 50%,
+            rgba(255, 255, 255, 0.2) 75%,
+            transparent 75%,
+            transparent);
+    background-size: 30px 30px;
+    font-size: 18px;
+    font-weight: bold;
+    transition: width 2s ease-in-out;
+    animation: progressAnimation 2s linear infinite;
+}
+
+.progress-bar-red {
+    width: 0;
+    height: 100%;
+    background-color: #df3a3a;
+    background-image: linear-gradient(-45deg,
+            rgba(255, 255, 255, 0.2) 25%,
+            transparent 25%,
+            transparent 50%,
+            rgba(255, 255, 255, 0.2) 50%,
+            rgba(255, 255, 255, 0.2) 75%,
+            transparent 75%,
+            transparent);
+    background-size: 30px 30px;
+    font-size: 18px;
+    font-weight: bold;
+    transition: width 2s ease-in-out;
+    animation: progressAnimation 2s linear infinite;
+}
+
+.progress-label {
+    color: #fff;
+    text-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+    height: 100%;
+}
+
+@keyframes progressAnimation {
+    from {
+        background-position: 0 0;
+    }
+
+    to {
+        background-position: 60px 0;
+    }
+}
